@@ -327,9 +327,6 @@ Short note:
 ## Author
 
 **Md. Kais**
-
 Dept. of CSE 
-
 University Of Chittagong 
-
-Course: CSE 816 (Machine Learning Lab)# Classification_Algorithms_In_Machine_Learning
+Course: CSE 816 (Machine Learning Lab)
