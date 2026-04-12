@@ -2,7 +2,8 @@
 
 #include <stdlib.h>
 
-typedef struct {
+typedef struct
+{
     double w[NUM_FEATURES];
     double bias;
 } SVMModel;
@@ -10,28 +11,37 @@ typedef struct {
 static SVMModel trainSVM(const Dataset *train, double lr, double lambda, int epochs)
 {
     SVMModel model;
-    for (int f = 0; f < NUM_FEATURES; f++) model.w[f] = 0.0;
+    for (int f = 0; f < NUM_FEATURES; f++)
+        model.w[f] = 0.0;
     model.bias = 0.0;
 
-    for (int epoch = 0; epoch < epochs; epoch++) {
-        for (int i = 0; i < train->size; i++) {
+    for (int epoch = 0; epoch < epochs; epoch++)
+    {
+        for (int i = 0; i < train->size; i++)
+        {
             double y_svm = (train->data[i].label == LABEL_FIT) ? 1.0 : -1.0;
             const double *x = train->data[i].features;
 
             double score = model.bias;
-            for (int f = 0; f < NUM_FEATURES; f++) {
+            for (int f = 0; f < NUM_FEATURES; f++)
+            {
                 score += model.w[f] * x[f];
             }
 
             double margin = y_svm * score;
 
-            if (margin < 1.0) {
-                for (int f = 0; f < NUM_FEATURES; f++) {
+            if (margin < 1.0)
+            {
+                for (int f = 0; f < NUM_FEATURES; f++)
+                {
                     model.w[f] += lr * (y_svm * x[f] - 2.0 * lambda * model.w[f]);
                 }
                 model.bias += lr * y_svm;
-            } else {
-                for (int f = 0; f < NUM_FEATURES; f++) {
+            }
+            else
+            {
+                for (int f = 0; f < NUM_FEATURES; f++)
+                {
                     model.w[f] -= lr * 2.0 * lambda * model.w[f];
                 }
             }
@@ -44,7 +54,8 @@ static SVMModel trainSVM(const Dataset *train, double lr, double lambda, int epo
 static int predictSVM(const SVMModel *model, const double *features)
 {
     double score = model->bias;
-    for (int f = 0; f < NUM_FEATURES; f++) {
+    for (int f = 0; f < NUM_FEATURES; f++)
+    {
         score += model->w[f] * features[f];
     }
     return (score > 0.0) ? LABEL_FIT : LABEL_OBESE;
@@ -52,7 +63,8 @@ static int predictSVM(const SVMModel *model, const double *features)
 
 static void batchPredictSVM(const SVMModel *model, const Dataset *ds, int *predictions)
 {
-    for (int i = 0; i < ds->size; i++) {
+    for (int i = 0; i < ds->size; i++)
+    {
         predictions[i] = predictSVM(model, ds->data[i].features);
     }
 }
@@ -73,26 +85,34 @@ static void interactiveSVMCLI(const SVMModel *model, const ScalerParams *sp)
 
     char buf[64];
 
-    while (1) {
+    while (1)
+    {
         double height_raw, weight_raw;
 
         printf("\n  Enter Height (cm) [or 'q' to quit]: ");
-        if (fgets(buf, sizeof(buf), stdin) == NULL) break;
-        if (buf[0] == 'q' || buf[0] == 'Q') break;
-        if (sscanf(buf, "%lf", &height_raw) != 1) {
+        if (fgets(buf, sizeof(buf), stdin) == NULL)
+            break;
+        if (buf[0] == 'q' || buf[0] == 'Q')
+            break;
+        if (sscanf(buf, "%lf", &height_raw) != 1)
+        {
             printf("  [!] Invalid input. Please enter a numeric value.\n");
             continue;
         }
 
         printf("  Enter Weight (kg): ");
-        if (fgets(buf, sizeof(buf), stdin) == NULL) break;
-        if (buf[0] == 'q' || buf[0] == 'Q') break;
-        if (sscanf(buf, "%lf", &weight_raw) != 1) {
+        if (fgets(buf, sizeof(buf), stdin) == NULL)
+            break;
+        if (buf[0] == 'q' || buf[0] == 'Q')
+            break;
+        if (sscanf(buf, "%lf", &weight_raw) != 1)
+        {
             printf("  [!] Invalid input. Please enter a numeric value.\n");
             continue;
         }
 
-        if (height_raw < 50 || height_raw > 250 || weight_raw < 10 || weight_raw > 300) {
+        if (height_raw < 50 || height_raw > 250 || weight_raw < 10 || weight_raw > 300)
+        {
             printf("  [!] Values look unrealistic. Please try again.\n");
             continue;
         }
@@ -126,11 +146,11 @@ int main(int argc, char *argv[])
 
     const char *train_csv = (argc >= 2) ? argv[1] : DEFAULT_TRAIN_CSV;
     const char *valid_csv = (argc >= 3) ? argv[2] : DEFAULT_VALID_CSV;
-    const char *test_csv  = (argc >= 4) ? argv[3] : DEFAULT_TEST_CSV;
+    const char *test_csv = (argc >= 4) ? argv[3] : DEFAULT_TEST_CSV;
 
     Dataset train = loadDatasetFromCSV(train_csv);
     Dataset valid = loadDatasetFromCSV(valid_csv);
-    Dataset test  = loadDatasetFromCSV(test_csv);
+    Dataset test = loadDatasetFromCSV(test_csv);
 
     printCSVInfo(train_csv, valid_csv, test_csv, &train, &valid, &test);
 
@@ -149,9 +169,10 @@ int main(int argc, char *argv[])
 
     int *train_preds = (int *)malloc(train.size * sizeof(int));
     int *valid_preds = (int *)malloc(valid.size * sizeof(int));
-    int *test_preds  = (int *)malloc(test.size  * sizeof(int));
+    int *test_preds = (int *)malloc(test.size * sizeof(int));
 
-    if (!train_preds || !valid_preds || !test_preds) {
+    if (!train_preds || !valid_preds || !test_preds)
+    {
         fprintf(stderr, "FATAL: malloc failed for prediction arrays\n");
         free(train_preds);
         free(valid_preds);
@@ -164,13 +185,11 @@ int main(int argc, char *argv[])
 
     batchPredictSVM(&svm, &train, train_preds);
     batchPredictSVM(&svm, &valid, valid_preds);
-    batchPredictSVM(&svm, &test,  test_preds);
+    batchPredictSVM(&svm, &test, test_preds);
 
     ClassificationReport train_report = buildClassificationReport(&train, train_preds);
     ClassificationReport valid_report = buildClassificationReport(&valid, valid_preds);
-    ClassificationReport test_report  = buildClassificationReport(&test,  test_preds);
-
-    printMetricGuide();
+    ClassificationReport test_report = buildClassificationReport(&test, test_preds);
     printClassificationReport("SVM", "Train report", &train_report);
     printClassificationReport("SVM", "Validation report", &valid_report);
     printClassificationReport("SVM", "Test report", &test_report);
