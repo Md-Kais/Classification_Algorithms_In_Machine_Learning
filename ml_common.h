@@ -3,45 +3,49 @@
 
 #include <stdio.h>
 
-#define NUM_FEATURES         2
-#define DEFAULT_K            3
-#define MAX_K_TO_TRY         11
-#define INITIAL_CAPACITY     64
+#define NUM_FEATURES 2
+#define DEFAULT_K 3
+#define MAX_K_TO_TRY 11
+#define INITIAL_CAPACITY 64
 
-#define DEFAULT_TRAIN_CSV    "Data/train.csv"
-#define DEFAULT_VALID_CSV    "Data/validate.csv"
-#define DEFAULT_TEST_CSV     "Data/test.csv"
-#define DEFAULT_UNLABELLED_CSV "Data/dataset_unlabelled.csv"
-#define DEFAULT_FRUIT_CSV    "Data/fruit_dataset.csv"
+#define DEFAULT_TRAIN_CSV "./Data/train.csv"
+#define DEFAULT_VALID_CSV "./Data/validate.csv"
+#define DEFAULT_TEST_CSV "./Data/test.csv"
+#define DEFAULT_UNLABELLED_CSV "./Data/dataset_unlabelled.csv"
+#define DEFAULT_FRUIT_CSV "./Data/fruit_dataset.csv"
 
-#define LEARNING_RATE        0.005
-#define LAMBDA_PARAM         0.001
-#define EPOCHS               20000
+#define LEARNING_RATE 0.005
+#define LAMBDA_PARAM 0.001
+#define EPOCHS 20000
 
-#define LABEL_FIT            0
-#define LABEL_OBESE          1
-#define NUM_CLASSES          2
+#define LABEL_FIT 0
+#define LABEL_OBESE 1
+#define NUM_CLASSES 2
 
-typedef struct {
+typedef struct
+{
     double features[NUM_FEATURES];
-    int    label;
+    int label;
 } Person;
 
-typedef struct {
+typedef struct
+{
     Person *data;
-    int     size;
+    int size;
 } Dataset;
 
-typedef struct {
+typedef struct
+{
     double min_val[NUM_FEATURES];
     double max_val[NUM_FEATURES];
 } ScalerParams;
 
-typedef struct {
+typedef struct
+{
     double precision[NUM_CLASSES];
     double recall[NUM_CLASSES];
     double f1[NUM_CLASSES];
-    int    support[NUM_CLASSES];
+    int support[NUM_CLASSES];
 
     double accuracy;
 
